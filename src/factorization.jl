@@ -40,6 +40,43 @@ end
 
 init_cacheval(alg::LUFactorization, A, b, u, Pl, Pr, maxiters, abstol, reltol, verbose) = ArrayInterface.lu_instance(A)
 
+## LAPACK LU Factorization
+struct LapackLUFactorization{P} <: AbstractFactorization
+    pivot::P
+end
+
+function LapackLUFactorization()
+    pivot = @static if VERSION < v"1.7beta"
+        Val(true)
+    else
+        RowMaximum()
+    end
+    LapackLUFactorization(pivot)
+end
+
+function do_factorization(alg::LapackLUFactorization, A, b, u)
+    A isa Union{AbstractMatrix,AbstractDiffEqOperator} ||
+        error("LU is not defined for $(typeof(A))")
+
+    if A isa AbstractDiffEqOperator
+        A = A.A
+    end
+    ws = LuWs(A)
+    lu!(A, ws)
+    return ws
+end
+
+function SciMLBase.solve(cache::LinearCache, alg::LapackLUFactorization; kwargs...)
+    if cache.isfresh
+        fact = do_factorization(alg, cache.A, cache.b, cache.u)
+        cache = set_cacheval(cache, fact)
+    end
+    y = ldiv!(cache.b, cache.cacheval)
+    SciMLBase.build_linear_solution(alg,y,nothing,cache)
+end
+
+init_cacheval(alg::LapackLUFactorization, A, b, u, Pl, Pr, maxiters, abstol, reltol, verbose) = LuWs(A)
+
 # This could be a GenericFactorization perhaps?
 Base.@kwdef struct UMFPACKFactorization <: AbstractFactorization
     reuse_symbolic::Bool = true

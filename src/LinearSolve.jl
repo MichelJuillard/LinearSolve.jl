@@ -32,6 +32,7 @@ include("factorization.jl")
 include("iterative_wrappers.jl")
 include("preconditioners.jl")
 include("default.jl")
+include("lu_lapack_solver.jl")
 
 const IS_OPENBLAS = Ref(true)
 isopenblas() = IS_OPENBLAS[]
@@ -48,7 +49,7 @@ function __init__()
 end
 
 export LUFactorization, SVDFactorization, QRFactorization, GenericFactorization,
-       RFLUFactorization, UMFPACKFactorization, KLUFactorization
+       RFLUFactorization, UMFPACKFactorization, KLUFactorization, LapackLUFactorization
 export KrylovJL, KrylovJL_CG, KrylovJL_GMRES, KrylovJL_BICGSTAB, KrylovJL_MINRES,
        IterativeSolversJL, IterativeSolversJL_CG, IterativeSolversJL_GMRES,
        IterativeSolversJL_BICGSTAB, IterativeSolversJL_MINRES
