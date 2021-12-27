@@ -41,7 +41,7 @@ function test_interface(alg, prob1, prob2)
 end
 
 @testset "LinearSolve" begin
-#=
+
 @testset "Default Linear Solver" begin
     test_interface(nothing, prob1, prob2)
 
@@ -70,7 +70,7 @@ end
     y = solve(_prob)
     @test A1 *  y  ≈ b1
 end
-=#
+
 @testset "LapackLU Factorization" begin
     A1 = A/1; b1 = rand(n); x1 = zero(b)
     A2 = A/2; b2 = rand(n); x2 = zero(b)
@@ -80,7 +80,6 @@ end
     test_interface(LapackLUFactorization(), prob1, prob2) 
 end
 
-#=
 @testset "UMFPACK Factorization" begin
     A1 = A/1; b1 = rand(n); x1 = zero(b)
     A2 = A/2; b2 = rand(n); x2 = zero(b)
@@ -266,5 +265,5 @@ end
 
     end
 end
-=#
+
 end # testset
